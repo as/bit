@@ -3,6 +3,7 @@ package bit
 import (
 	"encoding/binary"
 	"fmt"
+	"io"
 )
 
 // NewReader returns a new bitstream Reader with b as the
@@ -89,13 +90,13 @@ func (r *Reader) Read(n int) (val uint64) {
 	val = readBE(r.b[i:]) << m
 	r.at += n
 	if extra := 64 - int(n+m); extra < 0 {
-    // read over 64+7 bits, so issue another read call
-    // to get the rest of the data if there's room
+		// read over 64+7 bits, so issue another read call
+		// to get the rest of the data if there's room
 		r.at += extra
-		val |= r.Read(-extra) 
+		val |= r.Read(-extra)
 	} else {
-    // read a value less than 64 bits, shift it into
-    // its intended representation
+		// read a value less than 64 bits, shift it into
+		// its intended representation
 		val >>= 64 - n
 	}
 
