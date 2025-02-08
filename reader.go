@@ -15,11 +15,12 @@ func NewReader(b []byte) *Reader {
 	}
 }
 
-// Reader reads bits from a byte array
+// Reader reads bits from a byte stream
 type Reader struct {
 	b   []byte
-	at  int // bit offset
-	len int // length of bits, not bytes, divide by 8 for bytes
+	at  int
+	len int
+	err error
 }
 
 // ReadPrint reads a named symbol of n bytes from the underlying
@@ -62,11 +63,24 @@ func (r *Reader) Decode(dst any, n int) (val uint64) {
 	return
 }
 
+func (r *Reader) Ignore(n int) (val uint64) {
+	return r.ReadPrint("Ignored", n)
+}
+
+func (r *Reader) ok() bool {
+	return r.err == nil
+}
+
+func (r *Reader) Err() error {
+	return r.err
+}
+
 // Read reads n bits and returns it as a uint64, if the
 // read is not byte-aligned, up to calls to read may be issued
 // recursively
 func (r *Reader) Read(n int) (val uint64) {
 	if n < 0 || r.at+n > r.len {
+		r.err = io.EOF
 		return 0
 	}
 	i := r.at / 8 // byte offset
