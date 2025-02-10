@@ -103,9 +103,17 @@ func (r *Reader) Read(n int) (val uint64) {
 	return val
 }
 
+// Peek looks ahead up to 64 bits in the reader without advancing it
+func (r *Reader) Peek(n int) (val uint64) {
+	at, err := r.at, r.err
+	val = r.Read(n)
+	r.at, r.err = at, err
+	return
+}
+
 // Offset returns the current bit offset of the reader, or the
 // number of bits read. Divide by 8 for the byte offset.
-func (r *Reader) Offset() int{
+func (r *Reader) Offset() int {
 	return r.at
 }
 
