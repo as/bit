@@ -103,6 +103,12 @@ func (r *Reader) Read(n int) (val uint64) {
 	return val
 }
 
+// Offset returns the current bit offset of the reader, or the
+// number of bits read. Divide by 8 for the byte offset.
+func (r *Reader) Offset() int{
+	return r.at
+}
+
 // readBE reads bytes in the buffer into a uint64
 // the buffer p can be less than 64-bits
 func readBE(p []byte) (n uint64) {
